@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.android.lifehacker.MainActivity"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/headerT"
+        android:textSize="20sp"
+        android:textAlignment="center" />
+
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="147dp"
+        android:id="@+id/WebView1"
+        android:layout_weight="0.40" />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/summaryT"
+        android:layout_weight="0.68"
+        android:scrollbars = "vertical"
+        />
+
+    <Button
+        android:text="Next Story"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nextB" />
+
+    <Button
+        android:text="Last Story"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lastB" />
+
+    <Button
+        android:text="Open"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/openB" />
+</LinearLayout>
