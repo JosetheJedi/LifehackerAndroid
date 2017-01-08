@@ -53,4 +53,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/openB" />
+
+    <Button
+        android:text="Save to Evernote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/evernoteB" />
 </LinearLayout>
