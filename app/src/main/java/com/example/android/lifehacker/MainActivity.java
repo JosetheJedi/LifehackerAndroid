@@ -185,11 +185,29 @@ public class MainActivity extends AppCompatActivity {
                 media2 = media.get(size-1).getElementsByTag("p");
                 String articleLink = media.get(size-1).select("h1 a[href]").attr("abs:href");
 
+                articleText.append("<p>");
                 int msize = media2.size();
 
                 for(int i = 0; i < msize; i++){
                     String str = media2.get(i).text();
                     String link = media2.get(i).select("p a[href]").attr("abs:href");
+
+                    String pText = media2.get(i).select("p a[href]").text().toString();
+                    String absLink = "<a href=\"" + media2.get(i).select("p a[href]").attr("abs:href").toString() +"\">" + pText + "</a>";
+
+
+                    if(str.contains(pText) && !pText.equals("") && !absLink.isEmpty() && !pText.isEmpty())
+                    {
+                        str = str.replace(pText, absLink);
+                    }
+                    if(str.contains("&"))
+                    {
+                        str = str.replace("&", "&amp;");
+                    }
+                    if(link.contains("&"))
+                    {
+                        link = link.replace("&", "&amp;");
+                    }
 
                     if(str.contains("|") && !link.isEmpty())
                     {
@@ -197,13 +215,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        if(!str.equalsIgnoreCase("Advertisement") && !str.equalsIgnoreCase("Sponsored")){
+                        if(!str.equalsIgnoreCase("Advertisement") && !str.equalsIgnoreCase("Sponsored") && !str.isEmpty()){
                             articleText.append("<p>" + str + "</p>\n");
                         }
                     }
                 }
 
-                articleText.append("\n\n<i><small>Original article: <a href=\"" +articleLink+ "\">" + articleLink + "</a></small></i>");
+                articleText.append("\n\n<i><small>Original article: <a href=\"" +articleLink+ "\">" + articleLink + "</a></small></i></p>");
             }
             catch(IOException e)
             {
@@ -236,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onException(Exception exception) {
                     //Log.e(LOGTAG, "Error creating note", exception);
-                    System.out.println("Nothing happened");
+                    Toast.makeText(MainActivity.this, "Could not save :(", Toast.LENGTH_SHORT).show();
 
                 }
             });
