@@ -142,16 +142,25 @@ public class MainActivity extends AppCompatActivity {
         evernoteB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                articleURL = entries.get(entryNumber).getLink();
-                articleHeader = entries.get(entryNumber).getHeader();
 
-                // debugging
-                System.out.println(articleURL);
-                System.out.println(articleHeader);
 
-                new ScrapePage().execute();
+                if (!EvernoteSession.getInstance().isLoggedIn()) {
+                    m.authenticate(MainActivity.this);
+                    return;
+                }
+                else
+                {
+                    articleURL = entries.get(entryNumber).getLink();
+                    articleHeader = entries.get(entryNumber).getHeader();
 
-                System.out.println("success");
+                    // debugging
+                    System.out.println(articleURL);
+                    System.out.println(articleHeader);
+
+                    new ScrapePage().execute();
+
+                    System.out.println("success");
+                }
             }
         });
 
@@ -208,6 +217,10 @@ public class MainActivity extends AppCompatActivity {
                     {
                         link = link.replace("&", "&amp;");
                     }
+                    if(str.contains("Read more Read more"))
+                    {
+                        str = str.replace("Read more Read more", "Read more");
+                    }
 
                     if(str.contains("|") && !link.isEmpty())
                     {
@@ -234,10 +247,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if (!EvernoteSession.getInstance().isLoggedIn()) {
-                m.authenticate(MainActivity.this);
-                return;
-            }
 
             EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
 
