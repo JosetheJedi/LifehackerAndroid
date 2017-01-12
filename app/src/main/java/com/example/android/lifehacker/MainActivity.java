@@ -6,7 +6,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -19,7 +21,6 @@ import com.evernote.client.android.EvernoteUtil;
 import com.evernote.client.android.asyncclient.EvernoteCallback;
 import com.evernote.client.android.asyncclient.EvernoteNoteStoreClient;
 import com.evernote.edam.type.Note;
-import com.evernote.edam.type.NoteAttributes;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,7 +28,6 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView header = null;
     private Button next = null;
     private Button last = null;
-    private Button open = null;
-    private Button evernoteB = null;
     private Uri uriUrl = null;
     private Intent launchBrowser = null;
     private WebView web = null;
@@ -51,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
     private String articleHeader = "";
     private StringBuffer articleText = null;
 
-    /**** for evernote ***/
+    /****
+     * for evernote
+     ***/
 
     private static final String CONSUMER_KEY = "josefhu-15";
     private static final String CONSUMER_SECRET = "7420ea22e43c1583";
@@ -70,14 +70,12 @@ public class MainActivity extends AppCompatActivity {
                 .build(CONSUMER_KEY, CONSUMER_SECRET)
                 .asSingleton();
 
-        summary = (TextView)findViewById(R.id.summaryT);
+        summary = (TextView) findViewById(R.id.summaryT);
         summary.setMovementMethod(new ScrollingMovementMethod());
-        header = (TextView)findViewById(R.id.headerT);
-        next = (Button)findViewById(R.id.nextB);
-        last = (Button)findViewById(R.id.lastB);
-        open = (Button)findViewById(R.id.openB);
-        evernoteB = (Button)findViewById(R.id.evernoteB);
-        web = (WebView)findViewById(R.id.WebView1);
+        header = (TextView) findViewById(R.id.headerT);
+        next = (Button) findViewById(R.id.nextB);
+        last = (Button) findViewById(R.id.lastB);
+        web = (WebView) findViewById(R.id.WebView1);
         lastUrl = new Stack<>();
         entryNumber = 0;
 
@@ -91,16 +89,13 @@ public class MainActivity extends AppCompatActivity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(entryNumber<19)
-                {
+                if (entryNumber < 19) {
                     entryNumber++;
                     header.setText(entries.get(entryNumber).getHeader());
                     summary.setText(entries.get(entryNumber).getSummary());
                     imgUrl = entries.get(entryNumber).getImgURL();
                     web.loadUrl(imgUrl);
-                }
-                else if(entryNumber == 19)
-                {
+                } else if (entryNumber == 19) {
                     lastUrl.push(url);
                     url = getNextLink();
                     entryNumber = 0;
@@ -112,16 +107,13 @@ public class MainActivity extends AppCompatActivity {
         last.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(entryNumber>0)
-                {
+                if (entryNumber > 0) {
                     entryNumber--;
                     header.setText(entries.get(entryNumber).getHeader());
                     summary.setText(entries.get(entryNumber).getSummary());
                     imgUrl = entries.get(entryNumber).getImgURL();
                     web.loadUrl(imgUrl);
-                }
-                else if(!lastUrl.isEmpty() && entryNumber == 0)
-                {
+                } else if (!lastUrl.isEmpty() && entryNumber == 0) {
                     url = lastUrl.pop();
                     entryNumber = 19;
                     new Scrape().execute();
@@ -129,27 +121,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        open.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_open:
                 uriUrl = Uri.parse(entries.get(entryNumber).getLink());
                 launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
                 startActivity(launchBrowser);
                 Toast.makeText(MainActivity.this, "Opening Article", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        evernoteB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
+                return true;
+            case R.id.action_evernote:
                 if (!EvernoteSession.getInstance().isLoggedIn()) {
                     m.authenticate(MainActivity.this);
-                    return;
-                }
-                else
-                {
+                } else {
                     articleURL = entries.get(entryNumber).getLink();
                     articleHeader = entries.get(entryNumber).getHeader();
 
@@ -158,86 +152,75 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println(articleHeader);
 
                     new ScrapePage().execute();
-
+                    Toast.makeText(MainActivity.this, "Saving...", Toast.LENGTH_SHORT).show();
                     System.out.println("success");
                 }
-            }
-        });
-
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
-    public String getNextLink()
-    {
+    public String getNextLink() {
         String baseURL = "http://lifehacker.com/";
         url = baseURL + nextPage;
         return url;
     }
 
-    public class ScrapePage extends AsyncTask<Void, Void, Void>
-    {
+    public class ScrapePage extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {
 
             Document doc = null;
-            Elements media= null, media2 = null;
-            Entry en= null;
+            Elements media = null, media2 = null;
+            Entry en = null;
             int size = 0;
             articleText = new StringBuffer();
 
-            try
-            {
+            try {
                 doc = Jsoup.connect(articleURL).get();
 
                 media = doc.select("article.post");
                 size = media.size();
-                media2 = media.get(size-1).getElementsByTag("p");
-                String articleLink = media.get(size-1).select("h1 a[href]").attr("abs:href");
+                media2 = media.get(size - 1).getElementsByTag("p");
+                String articleLink = media.get(size - 1).select("h1 a[href]").attr("abs:href");
 
                 articleText.append("<p>");
                 int msize = media2.size();
 
-                for(int i = 0; i < msize; i++){
+                for (int i = 0; i < msize; i++) {
                     String str = media2.get(i).text();
                     String link = media2.get(i).select("p a[href]").attr("abs:href");
 
                     String pText = media2.get(i).select("p a[href]").text().toString();
-                    String absLink = "<a href=\"" + media2.get(i).select("p a[href]").attr("abs:href").toString() +"\">" + pText + "</a>";
+                    String absLink = "<a href=\"" + media2.get(i).select("p a[href]").attr("abs:href").toString() + "\">" + pText + "</a>";
 
 
-                    if(str.contains(pText) && !pText.equals("") && !absLink.isEmpty() && !pText.isEmpty())
-                    {
+                    if (str.contains(pText) && !pText.equals("") && !absLink.isEmpty() && !pText.isEmpty()) {
                         str = str.replace(pText, absLink);
                     }
-                    if(str.contains("&"))
-                    {
+                    if (str.contains("&")) {
                         str = str.replace("&", "&amp;");
                     }
-                    if(link.contains("&"))
-                    {
+                    if (link.contains("&")) {
                         link = link.replace("&", "&amp;");
                     }
-                    if(str.contains("Read more Read more"))
-                    {
+                    if (str.contains("Read more Read more")) {
                         str = str.replace("Read more Read more", "Read more");
                     }
 
-                    if(str.contains("|") && !link.isEmpty())
-                    {
-                        articleText.append("<a href=\"" + link + "\">" + str +"</a>");
-                    }
-                    else
-                    {
-                        if(!str.equalsIgnoreCase("Advertisement") && !str.equalsIgnoreCase("Sponsored") && !str.isEmpty()){
+                    if (str.contains("|") && !link.isEmpty()) {
+                        articleText.append("<a href=\"" + link + "\">" + str + "</a>");
+                    } else {
+                        if (!str.equalsIgnoreCase("Advertisement") && !str.equalsIgnoreCase("Sponsored") && !str.isEmpty()) {
                             articleText.append("<p>" + str + "</p>\n");
                         }
                     }
                 }
 
-                articleText.append("\n\n<i><small>Original article: <a href=\"" +articleLink+ "\">" + articleLink + "</a></small></i></p>");
-            }
-            catch(IOException e)
-            {
+                articleText.append("\n\n<i><small>Original article: <a href=\"" + articleLink + "\">" + articleLink + "</a></small></i></p>");
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -271,8 +254,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public class Scrape extends AsyncTask<Void, Void, Void>
-    {
+    public class Scrape extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -281,8 +263,7 @@ public class MainActivity extends AppCompatActivity {
             Elements media, links;
             Entry en;
             int size;
-            try
-            {
+            try {
                 doc = Jsoup.connect(url).get();
 
                 media = doc.select("article.postlist__item");
@@ -295,8 +276,7 @@ public class MainActivity extends AppCompatActivity {
 
                 nextPage = links.select("a").attr("href");
 
-                for(int i = 0; i < size; i++)
-                {
+                for (int i = 0; i < size; i++) {
                     en = new Entry();
                     en.setHeader(media.get(i).select(".headline").text());
                     en.setSummary(media.get(i).getElementsByTag("p").text());
@@ -306,9 +286,7 @@ public class MainActivity extends AppCompatActivity {
 
                     entries.add(en);
                 }
-            }
-            catch(IOException e)
-            {
+            } catch (IOException e) {
                 System.out.println("nothing to show");
             }
             return null;

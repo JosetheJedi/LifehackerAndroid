@@ -33,7 +33,7 @@
         android:id="@+id/summaryT"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.81"
+        android:layout_weight="0.59"
         android:scrollbars="vertical"
         android:text="Summary"
         android:layout_margin="10dp"/>
@@ -41,7 +41,8 @@
     <LinearLayout
         android:layout_width="252dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_weight="0.10">
 
 
         <Button
@@ -55,18 +56,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Last Story" />
-
-        <Button
-            android:id="@+id/openB"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Open" />
-
-        <Button
-            android:id="@+id/evernoteB"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save to Evernote" />
 
     </LinearLayout>
 
