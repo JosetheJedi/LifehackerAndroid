@@ -41,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView header = null;
     private Button next = null;
     private Button last = null;
-    private Uri uriUrl = null;
-    private Intent launchBrowser = null;
     private WebView web = null;
     private String imgUrl = "";
     private String articleURL = "";
@@ -79,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
         lastUrl = new Stack<>();
         entryNumber = 0;
 
-
         WebSettings settings = web.getSettings();
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
@@ -91,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (entryNumber < 19) {
                     entryNumber++;
-                    header.setText(entries.get(entryNumber).getHeader());
+                    articleHeader = entries.get(entryNumber).getHeader();
+                    header.setText(articleHeader);
                     summary.setText(entries.get(entryNumber).getSummary());
                     imgUrl = entries.get(entryNumber).getImgURL();
                     web.loadUrl(imgUrl);
@@ -109,7 +107,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (entryNumber > 0) {
                     entryNumber--;
-                    header.setText(entries.get(entryNumber).getHeader());
+                    articleHeader = entries.get(entryNumber).getHeader();
+                    header.setText(articleHeader);
                     summary.setText(entries.get(entryNumber).getSummary());
                     imgUrl = entries.get(entryNumber).getImgURL();
                     web.loadUrl(imgUrl);
@@ -132,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Uri uriUrl;
+        Intent launchBrowser;
+
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_open:
@@ -145,15 +147,9 @@ public class MainActivity extends AppCompatActivity {
                     m.authenticate(MainActivity.this);
                 } else {
                     articleURL = entries.get(entryNumber).getLink();
-                    articleHeader = entries.get(entryNumber).getHeader();
-
-                    // debugging
-                    System.out.println(articleURL);
-                    System.out.println(articleHeader);
 
                     new ScrapePage().execute();
                     Toast.makeText(MainActivity.this, "Saving...", Toast.LENGTH_SHORT).show();
-                    System.out.println("success");
                 }
                 return true;
             default:
@@ -172,10 +168,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            Document doc = null;
-            Elements media = null, media2 = null;
-            Entry en = null;
-            int size = 0;
+            Document doc;
+            Elements media, media2;
+            int size;
             articleText = new StringBuffer();
 
             try {
@@ -295,10 +290,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            header.setText(entries.get(entryNumber).getHeader());
+            articleHeader = entries.get(entryNumber).getHeader();
+            header.setText(articleHeader);
             summary.setText(entries.get(entryNumber).getSummary());
             //****** OPEN IMAGE ******//
-
             imgUrl = entries.get(entryNumber).getImgURL();
             web.loadUrl(imgUrl);
         }
