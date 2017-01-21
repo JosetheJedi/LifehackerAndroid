@@ -10,7 +10,8 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/action_evernote"
-        android:orderInCategory="100"
+        android:orderInCategory="101"
         android:title="@string/action_evernote"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_action_evernote"
+        app:showAsAction="always" />
 </menu>

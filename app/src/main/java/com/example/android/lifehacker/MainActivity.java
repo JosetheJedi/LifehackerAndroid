@@ -48,12 +48,12 @@ public class MainActivity extends AppCompatActivity {
     private StringBuffer articleText = null;
 
     /****
-     * for evernote
+     **** FOR EVERNOTE
      ***/
 
     private static final String CONSUMER_KEY = "josefhu-15";
     private static final String CONSUMER_SECRET = "7420ea22e43c1583";
-    private static final EvernoteSession.EvernoteService EVERNOTE_SERVICE = EvernoteSession.EvernoteService.SANDBOX;
+    private static final EvernoteSession.EvernoteService EVERNOTE_SERVICE = EvernoteSession.EvernoteService.PRODUCTION;
     private EvernoteSession m = null;
 
     @Override
